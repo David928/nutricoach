@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   // ── 3. CONSTRUCTION DU PROMPT ─────────────────────────────────────────
   const {
     name, goals, coachStyle, calTarget,
-    calories, score, prot, carb, fat,
+    calories, caloriesBurned, score, prot, carb, fat,
     activity, feeling, hunger, hydration,
     meals, notes, history
   } = data;
@@ -68,7 +68,9 @@ L'utilisateur s'appelle ${name}. Ses objectifs : ${userGoals}. Objectif caloriqu
 ${historyContext}
 
 Données de sa journée d'aujourd'hui :
-- Calories consommées : ${calories || '?'} kcal (objectif : ${calTarget} kcal, écart : ${calories ? (calories - calTarget > 0 ? '+' : '') + (calories - calTarget) + ' kcal' : '?'})
+- Calories consommées : ${calories || '?'} kcal
+- Calories dépensées (sport/activité) : ${caloriesBurned || '0'} kcal
+- Bilan net : ${calories && caloriesBurned ? (calories - caloriesBurned) + ' kcal' : calories || '?'} kcal (objectif : ${calTarget} kcal, écart : ${calories ? ((calories - (caloriesBurned||0)) - calTarget > 0 ? '+' : '') + ((calories - (caloriesBurned||0)) - calTarget) + ' kcal' : '?'})
 - Score nutritionnel Foodvisor : ${score || '?'}/100
 - Protéines : ${prot || '?'}g | Glucides : ${carb || '?'}g | Lipides : ${fat || '?'}g
 - Ratio calorique macros : ${prot && carb && fat ? `P ${Math.round(prot*4/(prot*4+carb*4+fat*9)*100)}% / G ${Math.round(carb*4/(prot*4+carb*4+fat*9)*100)}% / L ${Math.round(fat*9/(prot*4+carb*4+fat*9)*100)}%` : '?'}

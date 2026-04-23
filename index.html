@@ -926,11 +926,15 @@
           <div class="panel-title"><div class="pticon" style="background:var(--green-pale)">📋</div>Données du jour</div>
           <div class="form-grid">
             <div>
-              <label class="flabel">Calories totales</label>
+              <label class="flabel">Calories consommées</label>
               <input type="number" class="finput" id="calories" placeholder="Ex: 1750" oninput="updateRing()"/>
             </div>
             <div>
-              <label class="flabel">Score nutritionnel /100</label>
+              <label class="flabel">Calories dépensées</label>
+              <input type="number" class="finput" id="calories-burned" placeholder="Ex: 400"/>
+            </div>
+            <div>
+              <label class="flabel">Score nutritionnel /100 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-light)">(Foodvisor)</span></label>
               <input type="number" class="finput" id="score" placeholder="Ex: 72" min="0" max="100" oninput="updateScoreBar()"/>
             </div>
             <div>
@@ -1276,11 +1280,13 @@ function editProfile() {
 // ══════════════════════════════════════════════════
 function updateRing() {
   const cal = parseInt(document.getElementById('calories').value) || 0;
-  const pct = Math.min(cal / S.calTarget, 1);
+  const burned = parseInt(document.getElementById('calories-burned').value) || 0;
+  const net = cal - burned;
+  const pct = Math.min(net / S.calTarget, 1);
   const c = 2 * Math.PI * 44;
-  document.getElementById('ring-el').style.strokeDashoffset = c - pct * c;
-  document.getElementById('ring-val').textContent = cal.toLocaleString('fr');
-  document.getElementById('cal-remain-lbl').textContent = Math.max(0, S.calTarget - cal) + ' kcal';
+  document.getElementById('ring-el').style.strokeDashoffset = c - Math.max(0, pct) * c;
+  document.getElementById('ring-val').textContent = net.toLocaleString('fr');
+  document.getElementById('cal-remain-lbl').textContent = Math.max(0, S.calTarget - net) + ' kcal';
 }
 
 function updateScoreBar() {
@@ -1382,6 +1388,7 @@ async function analyse() {
       coachStyle: S.style,
       calTarget: S.calTarget,
       calories: document.getElementById('calories').value,
+      caloriesBurned: document.getElementById('calories-burned').value,
       score: document.getElementById('score').value,
       prot: document.getElementById('prot').value,
       carb: document.getElementById('carb').value,
@@ -1437,6 +1444,7 @@ function saveDay() {
   const entry = {
     date: new Date().toISOString(),
     calories: parseInt(document.getElementById('calories').value) || 0,
+    caloriesBurned: parseInt(document.getElementById('calories-burned').value) || 0,
     score: parseInt(document.getElementById('score').value) || 0,
     prot: parseInt(document.getElementById('prot').value) || 0,
     carb: parseInt(document.getElementById('carb').value) || 0,
