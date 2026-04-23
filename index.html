@@ -1459,7 +1459,7 @@ async function analyse() {
       document.getElementById('ai-ts').textContent = `Analysé à ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
     }
   } catch(e) {
-    msgEl.textContent = '❌ Erreur réseau. Vérifie ta connexion.';
+    msgEl.textContent = '❌ Erreur : ' + e.message;
   }
 
   btn.disabled = false;

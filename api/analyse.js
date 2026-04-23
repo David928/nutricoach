@@ -14,7 +14,16 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Méthode non autorisée' });
 
-  const { licenseEmail, data } = req.body;
+  // Parse body si pas auto-parsé
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch(e) {
+      return res.status(400).json({ error: 'JSON invalide' });
+    }
+  }
+  if (!body) return res.status(400).json({ error: 'Body vide' });
+
+  const { licenseEmail, data } = body;
 
   if (!licenseEmail || !data) {
     return res.status(400).json({ error: 'Email et données requis' });
