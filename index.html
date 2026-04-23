@@ -751,55 +751,28 @@
       <span style="font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700">NutriCoach AI</span>
     </div>
 
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Se connecter</button>
-      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">S'abonner</button>
+    <h2 class="auth-title">Accéder à l'app</h2>
+    <p class="auth-sub">Entre ton email pour te connecter ou démarrer ton essai gratuit.</p>
+
+    <div class="auth-error" id="login-error"></div>
+    <div class="auth-success" id="login-success"></div>
+
+    <div class="form-group">
+      <label class="form-label">Ton email</label>
+      <input type="email" class="form-input" id="login-email" placeholder="toi@email.com" />
     </div>
 
-    <!-- LOGIN -->
-    <div id="auth-login">
-      <h2 class="auth-title">Bon retour 👋</h2>
-      <p class="auth-sub">Entre ton email pour accéder à ton espace coaching.</p>
+    <button class="btn-primary" id="login-btn" onclick="handleLogin()">
+      Accéder à mon espace →
+    </button>
 
-      <div class="auth-error" id="login-error"></div>
-      <div class="auth-success" id="login-success"></div>
+    <div style="border-top:1.5px solid #e0ebe5;margin:20px 0 16px;"></div>
 
-      <div class="form-group">
-        <label class="form-label">Ton email abonné</label>
-        <input type="email" class="form-input" id="login-email" placeholder="toi@email.com" />
-      </div>
-
-      <button class="btn-primary" id="login-btn" onclick="handleLogin()">
-        Accéder à mon espace
-      </button>
-
-      <div class="auth-divider">Pas encore abonné ?</div>
-      <button class="btn-secondary" onclick="switchAuthTab('register')">
-        Créer mon abonnement
-      </button>
-    </div>
-
-    <!-- REGISTER -->
-    <div id="auth-register" style="display:none">
-      <h2 class="auth-title">Démarrer le coaching 🚀</h2>
-      <p class="auth-sub">7€/mois · Essai 7 jours gratuit · Annulable quand tu veux.</p>
-
-      <div class="auth-error" id="register-error"></div>
-
-      <div class="form-group">
-        <label class="form-label">Ton email</label>
-        <input type="email" class="form-input" id="register-email" placeholder="toi@email.com" />
-      </div>
-
-      <button class="btn-primary" id="register-btn" onclick="handleRegister()">
-        Continuer vers le paiement →
-      </button>
-
-      <div class="auth-divider">Déjà abonné ?</div>
-      <button class="btn-secondary" onclick="switchAuthTab('login')">
-        Me connecter
-      </button>
-    </div>
+    <p style="font-size:13px;color:var(--text-light);text-align:center;margin-bottom:12px">Pas encore abonné ?</p>
+    <button class="btn-secondary" onclick="handleRegisterUnified()">
+      Démarrer — 7€/mois · 7 jours gratuits 🚀
+    </button>
+    <p style="font-size:12px;color:var(--text-light);text-align:center;margin-top:10px">Annulable à tout moment · Aucun engagement</p>
   </div>
 </div>
 
@@ -933,14 +906,16 @@
         <!-- MACROS -->
         <div class="panel" style="margin-bottom:18px">
           <div class="panel-title"><div class="pticon" style="background:var(--orange-light)">📊</div>Macronutriments</div>
-          <div class="mprev">
+          <div class="mprev" style="grid-template-columns:repeat(4,1fr)">
             <div class="mpcard p"><div class="mpval" id="pv">0</div><div class="mpunit">g</div><div class="mplabel">Protéines</div></div>
             <div class="mpcard c"><div class="mpval" id="cv">0</div><div class="mpunit">g</div><div class="mplabel">Glucides</div></div>
             <div class="mpcard f"><div class="mpval" id="fv">0</div><div class="mpunit">g</div><div class="mplabel">Lipides</div></div>
+            <div class="mpcard" style="background:var(--cream)"><div class="mpval" id="fibv" style="color:#5ba85a">0</div><div class="mpunit">g</div><div class="mplabel" style="color:#5ba85a">Fibres</div></div>
           </div>
           <div class="macro-row"><div class="mlabel"><div class="mdot p"></div>Protéines</div><input class="minput" type="number" id="prot" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
           <div class="macro-row"><div class="mlabel"><div class="mdot c"></div>Glucides</div><input class="minput" type="number" id="carb" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
           <div class="macro-row"><div class="mlabel"><div class="mdot f"></div>Lipides</div><input class="minput" type="number" id="fat" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
+          <div class="macro-row"><div class="mlabel"><div class="mdot" style="background:#5ba85a"></div>Fibres</div><input class="minput" type="number" id="fiber" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
         </div>
 
         <!-- DONNÉES DU JOUR -->
@@ -1109,10 +1084,13 @@ const TIPS = [
 //  NAVIGATION
 // ══════════════════════════════════════════════════
 function goTo(screen, tab = null) {
+  // Sécurité : onboarding et app nécessitent un email vérifié
+  if ((screen === 'onboarding' || screen === 'app') && !S.email) {
+    screen = 'auth';
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById('screen-' + screen);
   if (el) el.classList.add('active');
-  if (tab && screen === 'auth') switchAuthTab(tab);
 }
 
 // ══════════════════════════════════════════════════
@@ -1126,7 +1104,11 @@ function init() {
 
   if (S.email && S.name) {
     showApp();
+  } else if (S.email && !S.name) {
+    // Email vérifié mais onboarding pas terminé → onboarding uniquement
+    goTo('onboarding');
   }
+  // Sinon → reste sur la landing (défaut)
 }
 
 function save() {
@@ -1136,12 +1118,16 @@ function save() {
 // ══════════════════════════════════════════════════
 //  AUTH
 // ══════════════════════════════════════════════════
-function switchAuthTab(tab) {
-  document.getElementById('auth-login').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('auth-register').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+function handleRegisterUnified() {
+  const email = document.getElementById('login-email').value.trim();
+  if (email && email.includes('@')) {
+    window.location.href = API_BASE + '/api/subscribe?email=' + encodeURIComponent(email);
+  } else {
+    window.location.href = API_BASE + '/api/subscribe';
+  }
 }
+
+function switchAuthTab(tab) {}  
 
 async function handleLogin() {
   const email = document.getElementById('login-email').value.trim();
@@ -1318,9 +1304,11 @@ function updateMacros() {
   const p = parseInt(document.getElementById('prot').value) || 0;
   const c = parseInt(document.getElementById('carb').value) || 0;
   const f = parseInt(document.getElementById('fat').value) || 0;
+  const fib = parseInt(document.getElementById('fiber').value) || 0;
   document.getElementById('pv').textContent = p;
   document.getElementById('cv').textContent = c;
   document.getElementById('fv').textContent = f;
+  document.getElementById('fibv').textContent = fib;
   const auto = p*4 + c*4 + f*9;
   const calInput = document.getElementById('calories');
   if (!calInput.value && auto > 0) { calInput.value = auto; updateRing(); }
@@ -1406,6 +1394,7 @@ async function analyse() {
       prot: document.getElementById('prot').value,
       carb: document.getElementById('carb').value,
       fat: document.getElementById('fat').value,
+      fiber: document.getElementById('fiber').value,
       activity: document.getElementById('activity').value,
       feeling: document.getElementById('feeling').value,
       hunger: document.getElementById('hunger').value,
@@ -1460,6 +1449,7 @@ function saveDay() {
     prot: parseInt(document.getElementById('prot').value) || 0,
     carb: parseInt(document.getElementById('carb').value) || 0,
     fat: parseInt(document.getElementById('fat').value) || 0,
+    fiber: parseInt(document.getElementById('fiber').value) || 0,
     activity: document.getElementById('activity').value,
     feeling: document.getElementById('feeling').value,
     hydration: S.drops,
@@ -1471,7 +1461,7 @@ function saveDay() {
   renderHistory();
 
   // Reset form
-  ['calories','score','prot','carb','fat','notes'].forEach(id => {
+  ['calories','score','prot','carb','fat','fiber','notes'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('meals-list').innerHTML = `
