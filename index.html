@@ -1005,6 +1005,7 @@
               <div class="meal-item"><span style="font-size:16px">☀️</span><input class="meal-name" placeholder="Petit-déjeuner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
               <div class="meal-item"><span style="font-size:16px">🥗</span><input class="meal-name" placeholder="Déjeuner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
               <div class="meal-item"><span style="font-size:16px">🌙</span><input class="meal-name" placeholder="Dîner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
+              <div class="meal-item"><span style="font-size:16px">🍎</span><input class="meal-name" placeholder="En-cas..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
             </div>
             <button class="add-meal" onclick="addMeal()">＋ Ajouter un repas</button>
           </div>
@@ -1489,13 +1490,19 @@ function saveDay() {
   renderHistory();
 
   // Reset form
-  ['calories','score','prot','carb','fat','fiber','notes'].forEach(id => {
+  ['calories','calories-burned','score','prot','carb','fat','fiber','notes'].forEach(id => {
     document.getElementById(id).value = '';
   });
+  // Reset face selector
+  document.querySelectorAll('.fv-face').forEach((f, i) => f.classList.toggle('selected', i === 0));
+  document.getElementById('score').value = 90;
   document.getElementById('meals-list').innerHTML = `
     <div class="meal-item"><span style="font-size:16px">☀️</span><input class="meal-name" placeholder="Petit-déjeuner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
+    <div class="meal-item"><span style="font-size:16px">🥗</span><input class="meal-name" placeholder="Déjeuner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
+    <div class="meal-item"><span style="font-size:16px">🌙</span><input class="meal-name" placeholder="Dîner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
+    <div class="meal-item"><span style="font-size:16px">🍎</span><input class="meal-name" placeholder="En-cas..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
   `;
-  mealN = 1;
+  mealN = 4;
   updateRing(); updateScoreBar(); updateMacros();
   document.getElementById('ai-msg').innerHTML = '✅ Journée sauvegardée ! <strong>Continue comme ça, tu es sur la bonne voie !</strong> 🎉';
   document.getElementById('ai-ts').textContent = '';
