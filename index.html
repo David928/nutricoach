@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriCoach AI — Ton coach nutrition intelligent</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #0a2e1a;
+    --green-mid: #1a5c35;
+    --green-fresh: #2d9e5f;
+    --green-light: #4eca83;
+    --green-pale: #e8f7ef;
+    --orange-warm: #f4845f;
+    --orange-light: #fff0eb;
+    --gold: #e8b84b;
+    --cream: #faf8f3;
+    --text-dark: #0d1f13;
+    --text-mid: #3d5a47;
+    --text-light: #8aab96;
+    --white: #ffffff;
+    --shadow: 0 8px 32px rgba(10,46,26,0.10);
+    --shadow-lg: 0 24px 64px rgba(10,46,26,0.16);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* ══════════════ SCREENS ══════════════ */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ══════════════ LANDING ══════════════ */
+  #screen-landing {
+    background: var(--green-deep);
+    display: flex; flex-direction: column;
+  }
+
+  .landing-header {
+    padding: 24px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .landing-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Clash Display', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: white;
+  }
+
+  .logo-badge {
+    background: var(--green-fresh);
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .landing-nav-btn {
+    padding: 10px 20px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 24px;
+    background: none;
+    color: white;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .landing-nav-btn:hover { background: rgba(255,255,255,0.1); }
+
+  .landing-hero {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 60px 40px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(45,158,95,0.2);
+    border: 1px solid rgba(45,158,95,0.4);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--green-light);
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+
+  .hero-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: clamp(36px, 6vw, 68px);
+    font-weight: 700;
+    color: white;
+    line-height: 1.05;
+    margin-bottom: 20px;
+    max-width: 700px;
+  }
+
+  .hero-title .accent { color: var(--green-light); }
+
+  .hero-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.6;
+    max-width: 500px;
+    margin-bottom: 44px;
+  }
+
+  .hero-cta {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+
+  .cta-primary {
+    padding: 18px 40px;
+    background: linear-gradient(135deg, var(--green-fresh), var(--green-light));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Clash Display', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.02em;
+    box-shadow: 0 8px 32px rgba(45,158,95,0.4);
+  }
+
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(45,158,95,0.5);
+  }
+
+  .cta-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .hero-features {
+    display: flex; gap: 32px;
+    margin-top: 64px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .feature-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* ══════════════ AUTH SCREEN ══════════════ */
+  #screen-auth {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--green-deep) 0%, #1a4a2a 100%);
+    padding: 20px;
+  }
+
+  .auth-card {
+    background: white;
+    border-radius: 24px;
+    padding: 44px 40px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  @keyframes slideUp {
+    from { opacity:0; transform: translateY(24px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  .auth-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .auth-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 24px; font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .auth-sub {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .auth-tabs {
+    display: flex; gap: 4px;
+    background: var(--cream);
+    padding: 4px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+  }
+
+  .auth-tab {
+    flex: 1; padding: 9px;
+    border: none; border-radius: 8px;
+    background: none;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .auth-tab.active {
+    background: white;
+    color: var(--text-dark);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 7px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e0ebe5;
+    border-radius: var(--radius-sm);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 15px;
+    color: var(--text-dark);
+    background: var(--cream);
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .form-input:focus { border-color: var(--green-fresh); background: white; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--green-fresh), var(--green-light));
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Clash Display', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(45,158,95,0.35); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    background: none;
+    color: var(--green-fresh);
+    border: 1.5px solid var(--green-fresh);
+    border-radius: var(--radius-sm);
+    font-family: 'Clash Display', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+
+  .btn-secondary:hover { background: var(--green-pale); }
+
+  .auth-divider {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-light);
+    margin: 16px 0;
+  }
+
+  .auth-error {
+    background: #fff0f0;
+    border: 1.5px solid #ffc5c5;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #c0392b;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .auth-success {
+    background: var(--green-pale);
+    border: 1.5px solid #a8dcc0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--green-mid);
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* ══════════════ ONBOARDING ══════════════ */
+  #screen-onboarding {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--green-deep) 0%, #1a4a2a 100%);
+    padding: 20px;
+  }
+
+  .ob-card {
+    background: white;
+    border-radius: 24px;
+    padding: 44px 40px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .ob-progress {
+    display: flex; gap: 6px; margin-bottom: 32px;
+  }
+
+  .ob-step-dot {
+    height: 4px; border-radius: 2px;
+    flex: 1;
+    background: #e0ebe5;
+    transition: background 0.3s;
+  }
+
+  .ob-step-dot.done { background: var(--green-fresh); }
+
+  .ob-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .ob-sub { font-size: 14px; color: var(--text-light); margin-bottom: 24px; line-height: 1.5; }
+
+  .ob-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .ob-section { margin-bottom: 22px; }
+
+  .chip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+
+  .chip {
+    padding: 11px 14px;
+    border: 1.5px solid #e0ebe5;
+    border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--cream);
+    user-select: none;
+  }
+
+  .chip:hover { border-color: var(--green-fresh); background: var(--green-pale); }
+  .chip.selected { border-color: var(--green-fresh); background: var(--green-pale); color: var(--green-mid); }
+
+  .ob-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e0ebe5;
+    border-radius: var(--radius-sm);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 15px;
+    color: var(--text-dark);
+    background: var(--cream);
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .ob-input:focus { border-color: var(--green-fresh); background: white; }
+
+  /* ══════════════ APP ══════════════ */
+  #screen-app { background: var(--cream); }
+
+  .app-header {
+    background: white;
+    border-bottom: 1px solid #eaf2ec;
+    padding: 0 24px;
+    height: 62px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .header-logo {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--text-dark);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  .streak-badge {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--orange-light);
+    color: var(--orange-warm);
+    font-size: 13px; font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 20px;
+  }
+
+  .user-menu {
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: background 0.15s;
+  }
+
+  .user-menu:hover { background: var(--green-pale); }
+
+  .user-avatar {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--green-fresh), var(--green-light));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: white; font-size: 13px;
+  }
+
+  .user-name { font-size: 14px; font-weight: 500; color: var(--text-dark); }
+
+  .app-main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 24px;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 22px;
+    align-items: start;
+  }
+
+  .full-row { grid-column: 1 / -1; }
+
+  .date-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .date-greeting {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 24px; font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .date-sub { font-size: 14px; color: var(--text-light); margin-top: 3px; }
+
+  .save-btn {
+    padding: 9px 18px;
+    background: var(--green-deep);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .save-btn:hover { background: var(--green-mid); }
+
+  .panel {
+    background: white;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .panel-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 15px; font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .pticon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .fg-full { grid-column: 1 / -1; }
+
+  .flabel {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  .finput, .fselect, .ftextarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid #e0ebe5;
+    border-radius: 8px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 13px;
+    color: var(--text-dark);
+    background: var(--cream);
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .finput:focus, .fselect:focus, .ftextarea:focus { border-color: var(--green-fresh); background: white; }
+  .ftextarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+  /* MACROS */
+  .macro-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .mlabel { width: 76px; font-size: 12px; font-weight: 500; color: var(--text-mid); display: flex; align-items: center; gap: 5px; }
+  .mdot { width: 7px; height: 7px; border-radius: 50%; }
+  .mdot.p { background: var(--green-fresh); }
+  .mdot.c { background: var(--gold); }
+  .mdot.f { background: var(--orange-warm); }
+  .minput { flex: 1; padding: 8px 11px; border: 1.5px solid #e0ebe5; border-radius: 7px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; color: var(--text-dark); background: var(--cream); outline: none; transition: border-color 0.2s; }
+  .minput:focus { border-color: var(--green-fresh); background: white; }
+  .munit { font-size: 11px; color: var(--text-light); width: 18px; }
+
+  /* MACROS PREVIEW */
+  .mprev { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .mpcard { background: var(--cream); border-radius: 10px; padding: 12px 8px; text-align: center; }
+  .mpval { font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; line-height: 1; }
+  .mpunit { font-size: 10px; color: var(--text-light); margin-top: 1px; }
+  .mplabel { font-size: 11px; font-weight: 600; margin-top: 5px; }
+  .mpcard.p .mplabel { color: var(--green-fresh); }
+  .mpcard.c .mplabel { color: var(--gold); }
+  .mpcard.f .mplabel { color: var(--orange-warm); }
+
+  /* CAL RING */
+  .cal-wrap { display: flex; align-items: center; gap: 18px; padding: 6px 0 16px; }
+  .ring-wrap { position: relative; flex-shrink: 0; }
+  .cal-ring { width: 96px; height: 96px; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: #e8f0eb; stroke-width: 8; }
+  .ring-fill { fill: none; stroke: url(#rg); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 276; stroke-dashoffset: 276; transition: stroke-dashoffset 0.7s cubic-bezier(0.34,1.56,0.64,1); }
+  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-val { font-family: 'Clash Display', sans-serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .ring-unit { font-size: 10px; color: var(--text-light); }
+  .cal-info { flex: 1; }
+  .cal-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-mid); margin-bottom: 5px; }
+  .cal-row-val { font-weight: 600; color: var(--text-dark); }
+
+  /* SCORE */
+  .score-track { height: 7px; background: #e8f0eb; border-radius: 4px; overflow: hidden; margin-top: 12px; }
+  .score-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--green-fresh), var(--green-light)); transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+
+  /* MEALS */
+  .meal-item { display: flex; align-items: center; gap: 8px; padding: 9px 11px; background: var(--cream); border-radius: 9px; margin-bottom: 7px; border: 1.5px solid transparent; transition: border-color 0.15s; }
+  .meal-item:hover { border-color: #d0e8d8; }
+  .meal-name { flex: 1; border: none; background: transparent; font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; color: var(--text-dark); outline: none; }
+  .meal-kcal { border: none; background: transparent; font-family: 'Bricolage Grotesque', sans-serif; font-size: 12px; color: var(--text-light); width: 55px; text-align: right; outline: none; }
+  .meal-del { width: 20px; height: 20px; border: none; background: none; cursor: pointer; color: #c5d9cc; font-size: 15px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.15s; }
+  .meal-del:hover { background: #ffe5e5; color: #e06060; }
+  .add-meal { display: flex; align-items: center; gap: 7px; padding: 9px 13px; border: 1.5px dashed #c5d9cc; border-radius: 9px; background: none; cursor: pointer; color: var(--text-light); font-family: 'Bricolage Grotesque', sans-serif; font-size: 12px; font-weight: 500; transition: all 0.2s; width: 100%; }
+  .add-meal:hover { border-color: var(--green-fresh); color: var(--green-fresh); background: var(--green-pale); }
+
+  /* ANALYSE BTN */
+  .analyse-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Clash Display', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 18px;
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+  }
+
+  .analyse-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(10,46,26,0.28); }
+  .analyse-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* AI PANEL */
+  .ai-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .ai-avatar { width: 34px; height: 34px; background: linear-gradient(135deg, var(--green-deep), var(--green-mid)); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+  .ai-name { font-family: 'Clash Display', sans-serif; font-size: 14px; font-weight: 600; }
+  .ai-status { font-size: 11px; color: var(--green-fresh); font-weight: 500; display: flex; align-items: center; gap: 3px; }
+  .ai-dot { width: 5px; height: 5px; background: var(--green-fresh); border-radius: 50%; animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  .ai-msg {
+    background: var(--green-pale);
+    border-radius: 12px 12px 12px 3px;
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-dark);
+    min-height: 70px;
+  }
+
+  .ai-msg strong { color: var(--green-mid); }
+  .ai-ts { font-size: 11px; color: var(--text-light); margin-top: 7px; text-align: right; }
+
+  /* HYDRATION */
+  .drops { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .drop { font-size: 22px; cursor: pointer; transition: all 0.15s; filter: grayscale(1) opacity(0.3); }
+  .drop.on { filter: none; }
+  .drop:hover { transform: scale(1.2); }
+
+  /* HISTORY */
+  .hist-item { display: flex; align-items: center; gap: 11px; padding: 11px 13px; background: var(--cream); border-radius: 9px; margin-bottom: 7px; cursor: pointer; transition: all 0.15s; }
+  .hist-item:hover { background: var(--green-pale); }
+  .hist-date { width: 40px; text-align: center; }
+  .hist-day { font-family: 'Clash Display', sans-serif; font-size: 17px; font-weight: 700; line-height: 1; }
+  .hist-month { font-size: 10px; color: var(--text-light); text-transform: uppercase; }
+  .hist-info { flex: 1; }
+  .hist-kcal { font-size: 13px; font-weight: 600; }
+  .hist-sc { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px; margin-top: 2px; }
+  .sc-good { background: var(--green-pale); color: var(--green-mid); }
+  .sc-ok { background: #fff9e6; color: #b8860b; }
+  .sc-low { background: #ffe9e9; color: #c0392b; }
+
+  /* SUBSCRIPTION BANNER */
+  .sub-banner {
+    background: linear-gradient(135deg, #1a4a2a, var(--green-mid));
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    color: white;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .sub-banner-text { font-size: 14px; line-height: 1.5; }
+  .sub-banner-title { font-family: 'Clash Display', sans-serif; font-size: 16px; font-weight: 600; margin-bottom: 3px; }
+  .sub-banner-price { font-size: 24px; font-weight: 700; color: var(--green-light); }
+  .sub-banner-period { font-size: 12px; color: rgba(255,255,255,0.6); }
+
+  .sub-btn {
+    padding: 12px 24px;
+    background: var(--green-light);
+    color: var(--green-deep);
+    border: none;
+    border-radius: 24px;
+    font-family: 'Clash Display', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .sub-btn:hover { transform: scale(1.03); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; background: var(--cream); padding: 4px; border-radius: 10px; margin-bottom: 18px; }
+  .tab { flex: 1; padding: 8px; border: none; border-radius: 7px; background: none; font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-light); cursor: pointer; transition: all 0.2s; }
+  .tab.active { background: white; color: var(--text-dark); font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 780px) {
+    .app-main { grid-template-columns: 1fr; padding: 14px; }
+    .date-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .hero-features { gap: 12px; }
+    .sub-banner { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ LANDING ══════════════════ -->
+<div id="screen-landing" class="screen active">
+  <header class="landing-header">
+    <div class="landing-logo">
+      <div class="logo-badge">🌿</div>
+      NutriCoach AI
+    </div>
+    <button class="landing-nav-btn" onclick="goTo('auth', 'login')">Se connecter</button>
+  </header>
+
+  <div class="landing-hero">
+    <div class="hero-badge">✨ Propulsé par Claude AI</div>
+    <h1 class="hero-title">
+      Ton coach nutrition<br><span class="accent">intelligent</span> au quotidien
+    </h1>
+    <p class="hero-sub">
+      Saisis tes données Foodvisor chaque jour et reçois une analyse personnalisée, des conseils actionnables et un suivi de ta progression.
+    </p>
+    <div class="hero-cta">
+      <button class="cta-primary" onclick="goTo('auth', 'register')">
+        Commencer — 7€/mois 🚀
+      </button>
+      <span class="cta-sub">Essai 7 jours gratuit · Annulable à tout moment</span>
+    </div>
+
+    <div class="hero-features">
+      <div class="feature-pill">🤖 Analyse IA quotidienne</div>
+      <div class="feature-pill">📊 Suivi macros & calories</div>
+      <div class="feature-pill">📅 Historique complet</div>
+      <div class="feature-pill">💡 Conseils personnalisés</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ AUTH ══════════════════ -->
+<div id="screen-auth" class="screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-badge" style="background:var(--green-fresh);width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px">🌿</div>
+      <span style="font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700">NutriCoach AI</span>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Se connecter</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">S'abonner</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="auth-login">
+      <h2 class="auth-title">Bon retour 👋</h2>
+      <p class="auth-sub">Entre ton email pour accéder à ton espace coaching.</p>
+
+      <div class="auth-error" id="login-error"></div>
+      <div class="auth-success" id="login-success"></div>
+
+      <div class="form-group">
+        <label class="form-label">Ton email abonné</label>
+        <input type="email" class="form-input" id="login-email" placeholder="toi@email.com" />
+      </div>
+
+      <button class="btn-primary" id="login-btn" onclick="handleLogin()">
+        Accéder à mon espace
+      </button>
+
+      <div class="auth-divider">Pas encore abonné ?</div>
+      <button class="btn-secondary" onclick="switchAuthTab('register')">
+        Créer mon abonnement
+      </button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="auth-register" style="display:none">
+      <h2 class="auth-title">Démarrer le coaching 🚀</h2>
+      <p class="auth-sub">7€/mois · Essai 7 jours gratuit · Annulable quand tu veux.</p>
+
+      <div class="auth-error" id="register-error"></div>
+
+      <div class="form-group">
+        <label class="form-label">Ton email</label>
+        <input type="email" class="form-input" id="register-email" placeholder="toi@email.com" />
+      </div>
+
+      <button class="btn-primary" id="register-btn" onclick="handleRegister()">
+        Continuer vers le paiement →
+      </button>
+
+      <div class="auth-divider">Déjà abonné ?</div>
+      <button class="btn-secondary" onclick="switchAuthTab('login')">
+        Me connecter
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ ONBOARDING ══════════════════ -->
+<div id="screen-onboarding" class="screen">
+  <div class="ob-card">
+    <div class="ob-progress">
+      <div class="ob-step-dot done" id="dot1"></div>
+      <div class="ob-step-dot" id="dot2"></div>
+      <div class="ob-step-dot" id="dot3"></div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div id="ob-step-1">
+      <h2 class="ob-title">Bienvenue ! 👋</h2>
+      <p class="ob-sub">Quelques secondes pour personnaliser ton coaching.</p>
+
+      <div class="ob-section">
+        <label class="ob-label">Ton prénom</label>
+        <input type="text" class="ob-input" id="ob-name" placeholder="Prénom..." />
+      </div>
+
+      <div class="ob-section">
+        <label class="ob-label">Objectif calorique journalier</label>
+        <input type="number" class="ob-input" id="ob-cal" placeholder="Ex: 1800" value="1800" />
+      </div>
+
+      <button class="btn-primary" onclick="obNext(1)">Suivant →</button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="ob-step-2" style="display:none">
+      <h2 class="ob-title">Tes objectifs 🎯</h2>
+      <p class="ob-sub">Sélectionne tout ce qui te correspond.</p>
+
+      <div class="ob-section">
+        <div class="chip-grid">
+          <div class="chip" data-goal="perte_poids" onclick="toggleChip(this)">🔥 Perte de poids</div>
+          <div class="chip" data-goal="prise_muscle" onclick="toggleChip(this)">💪 Prise de muscle</div>
+          <div class="chip" data-goal="equilibre" onclick="toggleChip(this)">⚖️ Rééquilibrage</div>
+          <div class="chip" data-goal="energie" onclick="toggleChip(this)">⚡ Plus d'énergie</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="obNext(2)">Suivant →</button>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="ob-step-3" style="display:none">
+      <h2 class="ob-title">Style de coaching 🎙️</h2>
+      <p class="ob-sub">Comment tu veux recevoir tes conseils ?</p>
+
+      <div class="ob-section">
+        <div class="chip-grid">
+          <div class="chip selected" data-style="motivant" onclick="selectStyle(this)">🎯 Motivant</div>
+          <div class="chip" data-style="direct" onclick="selectStyle(this)">⚡ Direct</div>
+          <div class="chip" data-style="pedagogique" onclick="selectStyle(this)">📚 Pédagogique</div>
+          <div class="chip" data-style="factuel" onclick="selectStyle(this)">📊 Factuel</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="completeOnboarding()">Commencer mon coaching 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ APP ══════════════════ -->
+<div id="screen-app" class="screen">
+  <header class="app-header">
+    <div class="header-logo">🌿 NutriCoach<span style="color:var(--green-fresh)">.</span>AI</div>
+    <div class="header-right">
+      <div class="streak-badge">🔥 <span id="streak-n">1</span>j</div>
+      <div class="user-menu" onclick="showUserMenu()">
+        <div class="user-avatar" id="user-av">?</div>
+        <span class="user-name" id="user-nm"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- DATE BAR -->
+    <div class="full-row date-bar">
+      <div>
+        <div class="date-greeting" id="today-date">Chargement...</div>
+        <div class="date-sub" id="today-welcome"></div>
+      </div>
+      <button class="save-btn" onclick="saveDay()">💾 Sauvegarder la journée</button>
+    </div>
+
+    <!-- LEFT COL -->
+    <div>
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('saisie', this)">📝 Saisie</button>
+        <button class="tab" onclick="switchTab('historique', this)">📅 Historique</button>
+      </div>
+
+      <!-- SAISIE -->
+      <div id="tab-saisie" class="tab-content active">
+
+        <!-- CAL + SCORE -->
+        <div class="panel" style="margin-bottom:18px">
+          <div class="panel-title"><div class="pticon" style="background:var(--green-pale)">🔥</div>Calories & Score</div>
+          <div class="cal-wrap">
+            <div class="ring-wrap">
+              <svg class="cal-ring" viewBox="0 0 96 96">
+                <defs>
+                  <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#2d9e5f"/>
+                    <stop offset="100%" style="stop-color:#4eca83"/>
+                  </linearGradient>
+                </defs>
+                <circle class="ring-bg" cx="48" cy="48" r="44"/>
+                <circle class="ring-fill" id="ring-el" cx="48" cy="48" r="44"/>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-val" id="ring-val">0</div>
+                <div class="ring-unit">kcal</div>
+              </div>
+            </div>
+            <div class="cal-info">
+              <div class="cal-row"><span>Objectif</span><span class="cal-row-val" id="cal-target-lbl">1800 kcal</span></div>
+              <div class="cal-row"><span>Reste</span><span class="cal-row-val" id="cal-remain-lbl">1800 kcal</span></div>
+              <div class="cal-row"><span>Score</span><span class="cal-row-val" id="score-lbl">—</span></div>
+            </div>
+          </div>
+          <div class="score-track"><div class="score-fill" id="score-bar" style="width:0%"></div></div>
+        </div>
+
+        <!-- MACROS -->
+        <div class="panel" style="margin-bottom:18px">
+          <div class="panel-title"><div class="pticon" style="background:var(--orange-light)">📊</div>Macronutriments</div>
+          <div class="mprev">
+            <div class="mpcard p"><div class="mpval" id="pv">0</div><div class="mpunit">g</div><div class="mplabel">Protéines</div></div>
+            <div class="mpcard c"><div class="mpval" id="cv">0</div><div class="mpunit">g</div><div class="mplabel">Glucides</div></div>
+            <div class="mpcard f"><div class="mpval" id="fv">0</div><div class="mpunit">g</div><div class="mplabel">Lipides</div></div>
+          </div>
+          <div class="macro-row"><div class="mlabel"><div class="mdot p"></div>Protéines</div><input class="minput" type="number" id="prot" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
+          <div class="macro-row"><div class="mlabel"><div class="mdot c"></div>Glucides</div><input class="minput" type="number" id="carb" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
+          <div class="macro-row"><div class="mlabel"><div class="mdot f"></div>Lipides</div><input class="minput" type="number" id="fat" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
+        </div>
+
+        <!-- DONNÉES DU JOUR -->
+        <div class="panel" style="margin-bottom:18px">
+          <div class="panel-title"><div class="pticon" style="background:var(--green-pale)">📋</div>Données du jour</div>
+          <div class="form-grid">
+            <div>
+              <label class="flabel">Calories totales</label>
+              <input type="number" class="finput" id="calories" placeholder="Ex: 1750" oninput="updateRing()"/>
+            </div>
+            <div>
+              <label class="flabel">Score nutritionnel /100</label>
+              <input type="number" class="finput" id="score" placeholder="Ex: 72" min="0" max="100" oninput="updateScoreBar()"/>
+            </div>
+            <div>
+              <label class="flabel">Activité physique</label>
+              <select class="fselect" id="activity">
+                <option value="sedentaire">😴 Sédentaire</option>
+                <option value="leger" selected>🚶 Léger (marche)</option>
+                <option value="modere">🏃 Modéré</option>
+                <option value="intense">💪 Intense</option>
+                <option value="tres_intense">🔥 Très intense</option>
+              </select>
+            </div>
+            <div>
+              <label class="flabel">Ressenti général</label>
+              <select class="fselect" id="feeling">
+                <option value="excellent">😄 Excellent</option>
+                <option value="bien" selected>🙂 Bien</option>
+                <option value="moyen">😐 Moyen</option>
+                <option value="fatigue">😴 Fatigué</option>
+                <option value="mauvais">😞 Difficile</option>
+              </select>
+            </div>
+            <div>
+              <label class="flabel">Faim ressentie</label>
+              <select class="fselect" id="hunger">
+                <option value="aucune">😌 Rassasié</option>
+                <option value="legere">🙂 Légère faim</option>
+                <option value="moderee" selected>😕 Faim modérée</option>
+                <option value="forte">😤 Forte faim</option>
+                <option value="cravings">🍫 Cravings</option>
+              </select>
+            </div>
+            <div>
+              <label class="flabel">Hydratation</label>
+              <select class="fselect" id="hydration-sel" onchange="updateDropsSel()">
+                <option value="0">0 verre</option>
+                <option value="2">2 verres</option>
+                <option value="4">4 verres</option>
+                <option value="6" selected>6 verres (1,5L)</option>
+                <option value="8">8 verres (2L) ✅</option>
+                <option value="10">10 verres (2,5L) 💧</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- REPAS -->
+          <div style="margin-top:18px">
+            <div class="flabel" style="margin-bottom:10px">🍽️ Repas détaillés</div>
+            <div id="meals-list">
+              <div class="meal-item"><span style="font-size:16px">☀️</span><input class="meal-name" placeholder="Petit-déjeuner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
+              <div class="meal-item"><span style="font-size:16px">🥗</span><input class="meal-name" placeholder="Déjeuner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
+              <div class="meal-item"><span style="font-size:16px">🌙</span><input class="meal-name" placeholder="Dîner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
+            </div>
+            <button class="add-meal" onclick="addMeal()">＋ Ajouter un repas</button>
+          </div>
+
+          <div style="margin-top:14px">
+            <label class="flabel">Notes libres</label>
+            <textarea class="ftextarea" id="notes" placeholder="Écarts, contexte, symptômes, humeur..."></textarea>
+          </div>
+
+          <button class="analyse-btn" id="analyse-btn" onclick="analyse()">
+            <span id="analyse-lbl">🤖 Analyser ma journée avec l'IA</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- HISTORIQUE -->
+      <div id="tab-historique" class="tab-content">
+        <div class="panel">
+          <div class="panel-title"><div class="pticon" style="background:#fdf6e3">📅</div>Historique</div>
+          <div id="hist-list"><div style="text-align:center;color:var(--text-light);padding:30px;font-size:13px">Aucune journée sauvegardée encore.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COL -->
+    <div style="display:flex;flex-direction:column;gap:18px">
+
+      <!-- COACH IA -->
+      <div class="panel">
+        <div class="panel-title"><div class="pticon" style="background:var(--green-pale)">🤖</div>Coach IA</div>
+        <div class="ai-header">
+          <div class="ai-avatar">🌿</div>
+          <div>
+            <div class="ai-name">NutriCoach</div>
+            <div class="ai-status"><div class="ai-dot"></div>En ligne</div>
+          </div>
+        </div>
+        <div class="ai-msg" id="ai-msg">
+          Saisis tes données et clique sur <strong>Analyser</strong> pour recevoir tes conseils du jour. 💪
+        </div>
+        <div class="ai-ts" id="ai-ts"></div>
+      </div>
+
+      <!-- HYDRATATION -->
+      <div class="panel">
+        <div class="panel-title"><div class="pticon" style="background:var(--green-pale)">💧</div>Hydratation</div>
+        <div class="drops" id="drops">
+          <span class="drop" onclick="clickDrop(0)">💧</span>
+          <span class="drop" onclick="clickDrop(1)">💧</span>
+          <span class="drop" onclick="clickDrop(2)">💧</span>
+          <span class="drop" onclick="clickDrop(3)">💧</span>
+          <span class="drop" onclick="clickDrop(4)">💧</span>
+          <span class="drop" onclick="clickDrop(5)">💧</span>
+          <span class="drop" onclick="clickDrop(6)">💧</span>
+          <span class="drop" onclick="clickDrop(7)">💧</span>
+          <span class="drop" onclick="clickDrop(8)">💧</span>
+          <span class="drop" onclick="clickDrop(9)">💧</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:8px" id="drops-lbl">6 verres (1,5L)</div>
+      </div>
+
+      <!-- ABONNEMENT INFO -->
+      <div class="panel" id="sub-info-panel" style="display:none">
+        <div class="panel-title"><div class="pticon" style="background:#fdf6e3">✨</div>Mon abonnement</div>
+        <div style="font-size:13px;color:var(--text-mid);line-height:1.6" id="sub-details">
+          Chargement...
+        </div>
+        <button style="margin-top:14px;width:100%;padding:10px;background:none;border:1.5px solid #e0ebe5;border-radius:8px;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;color:var(--text-mid);cursor:pointer" onclick="handleLogout()">
+          Se déconnecter
+        </button>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════
+const API_BASE = ''; // Même domaine Vercel
+let S = {
+  email: '',
+  name: '',
+  goals: [],
+  style: 'motivant',
+  calTarget: 1800,
+  drops: 6,
+  history: [],
+  subscriptionInfo: null,
+};
+
+const TIPS = [
+  "🥦 Des légumes à chaque repas pour booster tes fibres.",
+  "⏰ Manger à heures fixes régule ton métabolisme.",
+  "🥚 Protéines le matin = moins de fringales le soir.",
+  "💤 7-8h de sommeil optimise la récupération musculaire.",
+  "🚶 30 min de marche post-déjeuner améliore l'insuline.",
+];
+
+// ══════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════
+function goTo(screen, tab = null) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + screen);
+  if (el) el.classList.add('active');
+  if (tab && screen === 'auth') switchAuthTab(tab);
+}
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+function init() {
+  const saved = localStorage.getItem('nc_state');
+  if (saved) {
+    try { Object.assign(S, JSON.parse(saved)); } catch(e) {}
+  }
+
+  if (S.email && S.name) {
+    showApp();
+  }
+}
+
+function save() {
+  localStorage.setItem('nc_state', JSON.stringify(S));
+}
+
+// ══════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════
+function switchAuthTab(tab) {
+  document.getElementById('auth-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) return;
+
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-error');
+  const okEl = document.getElementById('login-success');
+
+  btn.disabled = true;
+  btn.textContent = 'Vérification...';
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  try {
+    const res = await fetch(API_BASE + '/api/check-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (data.active) {
+      S.email = email;
+      S.subscriptionInfo = data;
+      save();
+
+      if (S.name) {
+        showApp();
+      } else {
+        goTo('onboarding');
+      }
+    } else {
+      errEl.textContent = data.reason === 'NO_CUSTOMER'
+        ? '❌ Aucun abonnement trouvé pour cet email. Vérifie ou crée un abonnement.'
+        : '❌ Abonnement inactif ou expiré. Renouvelle sur Stripe.';
+      errEl.style.display = 'block';
+    }
+  } catch(e) {
+    errEl.textContent = '❌ Erreur de connexion. Réessaie dans quelques instants.';
+    errEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Accéder à mon espace';
+}
+
+function handleRegister() {
+  const email = document.getElementById('register-email').value.trim();
+  const errEl = document.getElementById('register-error');
+
+  if (!email || !email.includes('@')) {
+    errEl.textContent = '❌ Renseigne un email valide.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  errEl.style.display = 'none';
+  // Redirige vers Stripe avec l'email pré-rempli
+  window.location.href = API_BASE + '/api/subscribe?email=' + encodeURIComponent(email);
+}
+
+function handleLogout() {
+  if (!confirm('Se déconnecter ?')) return;
+  S.email = '';
+  S.name = '';
+  S.subscriptionInfo = null;
+  save();
+  goTo('landing');
+}
+
+// ══════════════════════════════════════════════════
+//  ONBOARDING
+// ══════════════════════════════════════════════════
+function obNext(step) {
+  if (step === 1) {
+    const name = document.getElementById('ob-name').value.trim();
+    const cal = parseInt(document.getElementById('ob-cal').value) || 1800;
+    if (!name) { document.getElementById('ob-name').focus(); return; }
+    S.name = name;
+    S.calTarget = cal;
+    document.getElementById('dot2').classList.add('done');
+    document.getElementById('ob-step-1').style.display = 'none';
+    document.getElementById('ob-step-2').style.display = 'block';
+  } else if (step === 2) {
+    S.goals = [...document.querySelectorAll('.chip[data-goal].selected')].map(c => c.dataset.goal);
+    document.getElementById('dot3').classList.add('done');
+    document.getElementById('ob-step-2').style.display = 'none';
+    document.getElementById('ob-step-3').style.display = 'block';
+  }
+}
+
+function toggleChip(el) { el.classList.toggle('selected'); }
+
+function selectStyle(el) {
+  document.querySelectorAll('.chip[data-style]').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  S.style = el.dataset.style;
+}
+
+function completeOnboarding() {
+  const styleEl = document.querySelector('.chip[data-style].selected');
+  if (styleEl) S.style = styleEl.dataset.style;
+  save();
+  showApp();
+}
+
+// ══════════════════════════════════════════════════
+//  APP
+// ══════════════════════════════════════════════════
+function showApp() {
+  goTo('app');
+
+  // Header
+  document.getElementById('user-av').textContent = S.name[0].toUpperCase();
+  document.getElementById('user-nm').textContent = S.name;
+  document.getElementById('cal-target-lbl').textContent = S.calTarget + ' kcal';
+  document.getElementById('cal-remain-lbl').textContent = S.calTarget + ' kcal';
+
+  // Date
+  const now = new Date();
+  const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  document.getElementById('today-date').textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]}`;
+  document.getElementById('today-welcome').textContent = `Bonjour ${S.name} ! On y va aujourd'hui ? 💪`;
+
+  // Streak
+  updateStreak();
+  renderHistory();
+  updateDropsFromState();
+
+  // Sub info
+  if (S.subscriptionInfo) {
+    const p = document.getElementById('sub-info-panel');
+    p.style.display = 'block';
+    document.getElementById('sub-details').innerHTML = `
+      ✅ <strong>Abonnement actif</strong><br>
+      Plan : ${S.subscriptionInfo.plan || 'NutriCoach Pro'}<br>
+      Renouvellement : ${S.subscriptionInfo.renewsAt || '—'}<br>
+      Email : ${S.email}
+    `;
+  }
+}
+
+function showUserMenu() {
+  if (confirm(`Déconnexion de ${S.name} ?\n(Tes données locales sont conservées)`)) {
+    handleLogout();
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  RING + SCORE
+// ══════════════════════════════════════════════════
+function updateRing() {
+  const cal = parseInt(document.getElementById('calories').value) || 0;
+  const pct = Math.min(cal / S.calTarget, 1);
+  const c = 2 * Math.PI * 44;
+  document.getElementById('ring-el').style.strokeDashoffset = c - pct * c;
+  document.getElementById('ring-val').textContent = cal.toLocaleString('fr');
+  document.getElementById('cal-remain-lbl').textContent = Math.max(0, S.calTarget - cal) + ' kcal';
+}
+
+function updateScoreBar() {
+  const sc = parseInt(document.getElementById('score').value) || 0;
+  document.getElementById('score-bar').style.width = sc + '%';
+  document.getElementById('score-lbl').textContent = sc >= 70 ? '🌟 ' + sc + '/100' : sc >= 40 ? '👍 ' + sc + '/100' : '⚠️ ' + sc + '/100';
+}
+
+// ══════════════════════════════════════════════════
+//  MACROS
+// ══════════════════════════════════════════════════
+function updateMacros() {
+  const p = parseInt(document.getElementById('prot').value) || 0;
+  const c = parseInt(document.getElementById('carb').value) || 0;
+  const f = parseInt(document.getElementById('fat').value) || 0;
+  document.getElementById('pv').textContent = p;
+  document.getElementById('cv').textContent = c;
+  document.getElementById('fv').textContent = f;
+  const auto = p*4 + c*4 + f*9;
+  const calInput = document.getElementById('calories');
+  if (!calInput.value && auto > 0) { calInput.value = auto; updateRing(); }
+}
+
+// ══════════════════════════════════════════════════
+//  MEALS
+// ══════════════════════════════════════════════════
+const ICONS = ['☀️','🥗','🌙','🍎','☕','🍪','🥤','🫐'];
+let mealN = 3;
+
+function addMeal() {
+  const list = document.getElementById('meals-list');
+  const d = document.createElement('div');
+  d.className = 'meal-item';
+  d.innerHTML = `<span style="font-size:16px">${ICONS[mealN % ICONS.length]}</span><input class="meal-name" placeholder="Aliment..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button>`;
+  list.appendChild(d);
+  mealN++;
+  d.querySelector('.meal-name').focus();
+}
+
+function delMeal(btn) { btn.closest('.meal-item').remove(); }
+
+// ══════════════════════════════════════════════════
+//  HYDRATION
+// ══════════════════════════════════════════════════
+function clickDrop(i) {
+  S.drops = i + 1;
+  updateDropsFromState();
+  document.getElementById('hydration-sel').value = Math.min(S.drops, 10);
+}
+
+function updateDropsSel() {
+  S.drops = parseInt(document.getElementById('hydration-sel').value) || 0;
+  updateDropsFromState();
+}
+
+function updateDropsFromState() {
+  document.querySelectorAll('.drop').forEach((d, i) => d.classList.toggle('on', i < S.drops));
+  const l = (S.drops * 0.25).toFixed(1);
+  document.getElementById('drops-lbl').textContent = S.drops >= 8
+    ? `✅ Objectif atteint ! ${S.drops} verres (${l}L)`
+    : `${S.drops} verres (${l}L) — objectif : 8 verres`;
+}
+
+// ══════════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ══════════════════════════════════════════════════
+//  ANALYSE IA
+// ══════════════════════════════════════════════════
+async function analyse() {
+  const btn = document.getElementById('analyse-btn');
+  const lbl = document.getElementById('analyse-lbl');
+  const msgEl = document.getElementById('ai-msg');
+
+  btn.disabled = true;
+  lbl.innerHTML = '<div class="spinner"></div> Analyse en cours...';
+  msgEl.textContent = '⏳ Je lis ta journée...';
+
+  const meals = [...document.querySelectorAll('.meal-item')].map(m => {
+    const n = m.querySelector('.meal-name').value;
+    const k = m.querySelector('.meal-kcal').value;
+    return n ? `${n}${k ? ' (' + k + ' kcal)' : ''}` : null;
+  }).filter(Boolean).join(', ');
+
+  const payload = {
+    licenseEmail: S.email,
+    data: {
+      name: S.name,
+      goals: S.goals,
+      coachStyle: S.style,
+      calTarget: S.calTarget,
+      calories: document.getElementById('calories').value,
+      score: document.getElementById('score').value,
+      prot: document.getElementById('prot').value,
+      carb: document.getElementById('carb').value,
+      fat: document.getElementById('fat').value,
+      activity: document.getElementById('activity').value,
+      feeling: document.getElementById('feeling').value,
+      hunger: document.getElementById('hunger').value,
+      hydration: `${S.drops} verres (${(S.drops * 0.25).toFixed(1)}L)`,
+      meals,
+      notes: document.getElementById('notes').value,
+      history: S.history,
+    }
+  };
+
+  try {
+    const res = await fetch(API_BASE + '/api/analyse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      const code = data.code;
+      if (code === 'NO_CUSTOMER' || code === 'INACTIVE_SUBSCRIPTION') {
+        msgEl.innerHTML = '🔒 <strong>Abonnement requis.</strong> Ton accès n\'est plus actif. <a href="/api/subscribe" style="color:var(--green-fresh)">Renouveler →</a>';
+      } else {
+        msgEl.textContent = '❌ ' + (data.error || 'Erreur inconnue');
+      }
+    } else {
+      // Formater le markdown basique
+      const formatted = data.analysis
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+      msgEl.innerHTML = formatted;
+      const now = new Date();
+      document.getElementById('ai-ts').textContent = `Analysé à ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+    }
+  } catch(e) {
+    msgEl.textContent = '❌ Erreur réseau. Vérifie ta connexion.';
+  }
+
+  btn.disabled = false;
+  lbl.innerHTML = '🤖 Analyser ma journée avec l\'IA';
+}
+
+// ══════════════════════════════════════════════════
+//  SAVE DAY
+// ══════════════════════════════════════════════════
+function saveDay() {
+  const entry = {
+    date: new Date().toISOString(),
+    calories: parseInt(document.getElementById('calories').value) || 0,
+    score: parseInt(document.getElementById('score').value) || 0,
+    prot: parseInt(document.getElementById('prot').value) || 0,
+    carb: parseInt(document.getElementById('carb').value) || 0,
+    fat: parseInt(document.getElementById('fat').value) || 0,
+    activity: document.getElementById('activity').value,
+    feeling: document.getElementById('feeling').value,
+    hydration: S.drops,
+  };
+
+  S.history.unshift(entry);
+  save();
+  updateStreak();
+  renderHistory();
+
+  // Reset form
+  ['calories','score','prot','carb','fat','notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('meals-list').innerHTML = `
+    <div class="meal-item"><span style="font-size:16px">☀️</span><input class="meal-name" placeholder="Petit-déjeuner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
+  `;
+  mealN = 1;
+  updateRing(); updateScoreBar(); updateMacros();
+  document.getElementById('ai-msg').innerHTML = '✅ Journée sauvegardée ! <strong>Continue comme ça, tu es sur la bonne voie !</strong> 🎉';
+  document.getElementById('ai-ts').textContent = '';
+}
+
+// ══════════════════════════════════════════════════
+//  STREAK
+// ══════════════════════════════════════════════════
+function updateStreak() {
+  let streak = 0;
+  const today = new Date(); today.setHours(0,0,0,0);
+  for (let i = 0; i < S.history.length; i++) {
+    const d = new Date(S.history[i].date); d.setHours(0,0,0,0);
+    if (Math.round((today - d) / 86400000) === i) streak++;
+    else break;
+  }
+  document.getElementById('streak-n').textContent = Math.max(streak, 1);
+}
+
+// ══════════════════════════════════════════════════
+//  HISTORY
+// ══════════════════════════════════════════════════
+function renderHistory() {
+  const el = document.getElementById('hist-list');
+  if (!S.history.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--text-light);padding:30px;font-size:13px">Aucune journée sauvegardée encore.</div>';
+    return;
+  }
+  const mo = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  el.innerHTML = S.history.slice(0, 14).map(h => {
+    const d = new Date(h.date);
+    const sc = h.score;
+    const cls = sc >= 70 ? 'sc-good' : sc >= 40 ? 'sc-ok' : 'sc-low';
+    const slbl = sc >= 70 ? '🌟 Excellent' : sc >= 40 ? '👍 Correct' : '⚠️ À améliorer';
+    return `<div class="hist-item">
+      <div class="hist-date"><div class="hist-day">${d.getDate()}</div><div class="hist-month">${mo[d.getMonth()]}</div></div>
+      <div class="hist-info"><div class="hist-kcal">${h.calories || '?'} kcal</div><span class="hist-sc ${cls}">${slbl}</span></div>
+      <div style="font-size:11px;color:var(--text-light)">P:${h.prot}g C:${h.carb}g L:${h.fat}g</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
