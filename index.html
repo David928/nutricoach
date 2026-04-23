@@ -1248,9 +1248,27 @@ function showApp() {
 }
 
 function showUserMenu() {
-  if (confirm(`Déconnexion de ${S.name} ?\n(Tes données locales sont conservées)`)) {
-    handleLogout();
-  }
+  const choice = confirm(`👤 ${S.name}\n\nOK → Modifier mon profil\nAnnuler → rester ici\n\n(Pour se déconnecter, utilise le bouton dans le panneau Abonnement)`);
+  if (choice) editProfile();
+}
+
+function editProfile() {
+  goTo('onboarding');
+  // Pré-remplir avec les valeurs actuelles
+  setTimeout(() => {
+    const nameEl = document.getElementById('ob-name');
+    const calEl = document.getElementById('ob-cal');
+    if (nameEl) nameEl.value = S.name;
+    if (calEl) calEl.value = S.calTarget;
+    // Pré-sélectionner les objectifs
+    document.querySelectorAll('.chip[data-goal]').forEach(c => {
+      c.classList.toggle('selected', S.goals.includes(c.dataset.goal));
+    });
+    // Pré-sélectionner le style
+    document.querySelectorAll('.chip[data-style]').forEach(c => {
+      c.classList.toggle('selected', c.dataset.style === S.style);
+    });
+  }, 50);
 }
 
 // ══════════════════════════════════════════════════

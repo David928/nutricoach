@@ -20,44 +20,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Email et données requis' });
   }
 
-  // ── 1. VÉRIFICATION ABONNEMENT STRIPE ──────────────────────────────────
-  try {
-    const stripeRes = await fetch(
-      `https://api.stripe.com/v1/customers/search?query=email:'${encodeURIComponent(licenseEmail)}'&expand[]=data.subscriptions`,
-      {
-        headers: {
-          Authorization: `Bearer ${STRIPE_SECRET_KEY}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
-    );
-
-    const stripeData = await stripeRes.json();
-
-    if (!stripeData.data || stripeData.data.length === 0) {
-      return res.status(403).json({
-        error: 'Aucun abonnement trouvé pour cet email.',
-        code: 'NO_CUSTOMER'
-      });
-    }
-
-    const customer = stripeData.data[0];
-    const subscriptions = customer.subscriptions?.data || [];
-    const activeSubscription = subscriptions.find(
-      sub => sub.status === 'active' || sub.status === 'trialing'
-    );
-
-    if (!activeSubscription) {
-      return res.status(403).json({
-        error: 'Abonnement inactif ou expiré.',
-        code: 'INACTIVE_SUBSCRIPTION'
-      });
-    }
-
-  } catch (err) {
-    console.error('Stripe error:', err);
-    return res.status(500).json({ error: 'Erreur vérification abonnement' });
-  }
+  // ── 1. VÉRIFICATION ABONNEMENT STRIPE (désactivée — mode test) ─────────
+  // TODO: réactiver avant la mise en production
 
   // ── 2. LIMITE JOURNALIÈRE (simple, basé sur KV ou header) ─────────────
   // Note : Pour une vraie limite, utiliser Vercel KV ou upstash.
