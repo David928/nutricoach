@@ -42,8 +42,9 @@
   /* ══════════════ LANDING ══════════════ */
   #screen-landing {
     background: var(--green-deep);
-    display: flex; flex-direction: column;
+    flex-direction: column;
   }
+  #screen-landing.active { display: flex; }
 
   .landing-header {
     padding: 24px 40px;
@@ -168,10 +169,11 @@
 
   /* ══════════════ AUTH SCREEN ══════════════ */
   #screen-auth {
-    display: flex; align-items: center; justify-content: center;
+    align-items: center; justify-content: center;
     background: linear-gradient(135deg, var(--green-deep) 0%, #1a4a2a 100%);
     padding: 20px;
   }
+  #screen-auth.active { display: flex; }
 
   .auth-card {
     background: white;
@@ -326,10 +328,11 @@
 
   /* ══════════════ ONBOARDING ══════════════ */
   #screen-onboarding {
-    display: flex; align-items: center; justify-content: center;
+    align-items: center; justify-content: center;
     background: linear-gradient(135deg, var(--green-deep) 0%, #1a4a2a 100%);
     padding: 20px;
   }
+  #screen-onboarding.active { display: flex; }
 
   .ob-card {
     background: white;
