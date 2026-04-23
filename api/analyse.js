@@ -71,7 +71,7 @@ Données de sa journée d'aujourd'hui :
 - Calories consommées : ${calories || '?'} kcal
 - Calories dépensées (sport/activité) : ${caloriesBurned || '0'} kcal
 - Bilan net : ${calories && caloriesBurned ? (calories - caloriesBurned) + ' kcal' : calories || '?'} kcal (objectif : ${calTarget} kcal, écart : ${calories ? ((calories - (caloriesBurned||0)) - calTarget > 0 ? '+' : '') + ((calories - (caloriesBurned||0)) - calTarget) + ' kcal' : '?'})
-- Score nutritionnel Foodvisor : ${score || '?'}/100
+- Note Foodvisor : ${score >= 80 ? '🟢 Journée verte (excellente qualité)' : score >= 55 ? '🔵 Journée bleue (bonne qualité)' : score >= 30 ? '🟠 Journée orange (qualité moyenne)' : '🔴 Journée rouge (à améliorer)'}
 - Protéines : ${prot || '?'}g | Glucides : ${carb || '?'}g | Lipides : ${fat || '?'}g
 - Ratio calorique macros : ${prot && carb && fat ? `P ${Math.round(prot*4/(prot*4+carb*4+fat*9)*100)}% / G ${Math.round(carb*4/(prot*4+carb*4+fat*9)*100)}% / L ${Math.round(fat*9/(prot*4+carb*4+fat*9)*100)}%` : '?'}
 - Activité physique : ${activity || '?'}

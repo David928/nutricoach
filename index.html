@@ -698,6 +698,10 @@
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
+  .fv-face { padding: 6px 10px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; background: var(--cream); }
+  .fv-face:hover { transform: scale(1.15); }
+  .fv-face.selected { border-color: var(--green-fresh); background: var(--green-pale); transform: scale(1.15); }
+
   .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -934,8 +938,22 @@
               <input type="number" class="finput" id="calories-burned" placeholder="Ex: 400"/>
             </div>
             <div>
-              <label class="flabel">Score nutritionnel /100 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-light)">(Foodvisor)</span></label>
-              <input type="number" class="finput" id="score" placeholder="Ex: 72" min="0" max="100" oninput="updateScoreBar()"/>
+              <label class="flabel">Note Foodvisor</label>
+              <div style="display:flex;gap:10px;margin-top:4px" id="foodvisor-faces">
+                <div class="fv-face selected" data-color="green" data-score="90" onclick="selectFace(this)" title="Verte — Excellent">
+                  <span style="font-size:26px;filter:hue-rotate(90deg) saturate(2)">😊</span>
+                </div>
+                <div class="fv-face" data-color="blue" data-score="65" onclick="selectFace(this)" title="Bleue — Bien">
+                  <span style="font-size:26px;filter:hue-rotate(200deg) saturate(2)">😊</span>
+                </div>
+                <div class="fv-face" data-color="orange" data-score="40" onclick="selectFace(this)" title="Orange — Moyen">
+                  <span style="font-size:26px;filter:hue-rotate(30deg) saturate(2)">😐</span>
+                </div>
+                <div class="fv-face" data-color="red" data-score="15" onclick="selectFace(this)" title="Rouge — À améliorer">
+                  <span style="font-size:26px;filter:hue-rotate(330deg) saturate(2)">😕</span>
+                </div>
+              </div>
+              <input type="hidden" id="score" value="90"/>
             </div>
             <div>
               <label class="flabel">Activité physique</label>
@@ -1289,10 +1307,20 @@ function updateRing() {
   document.getElementById('cal-remain-lbl').textContent = Math.max(0, S.calTarget - net) + ' kcal';
 }
 
+function selectFace(el) {
+  document.querySelectorAll('.fv-face').forEach(f => f.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('score').value = el.dataset.score;
+  updateScoreBar();
+}
+
 function updateScoreBar() {
   const sc = parseInt(document.getElementById('score').value) || 0;
+  const face = document.querySelector('.fv-face.selected');
+  const color = face ? face.dataset.color : null;
   document.getElementById('score-bar').style.width = sc + '%';
-  document.getElementById('score-lbl').textContent = sc >= 70 ? '🌟 ' + sc + '/100' : sc >= 40 ? '👍 ' + sc + '/100' : '⚠️ ' + sc + '/100';
+  const labels = { green: '🟢 Journée verte', blue: '🔵 Journée bleue', orange: '🟠 Journée orange', red: '🔴 Journée rouge' };
+  document.getElementById('score-lbl').textContent = color ? labels[color] : '—';
 }
 
 // ══════════════════════════════════════════════════
