@@ -1122,61 +1122,32 @@ function save() {
 //  AUTH
 // ══════════════════════════════════════════════════
 function handleRegisterUnified() {
-  const email = document.getElementById('login-email').value.trim();
-  if (email && email.includes('@')) {
-    window.location.href = API_BASE + '/api/subscribe?email=' + encodeURIComponent(email);
-  } else {
-    window.location.href = API_BASE + '/api/subscribe';
-  }
+  // MODE TEST — redirige directement vers le login
+  handleLogin();
 }
 
 function switchAuthTab(tab) {}  
 
 async function handleLogin() {
   const email = document.getElementById('login-email').value.trim();
-  if (!email) return;
-
-  const btn = document.getElementById('login-btn');
   const errEl = document.getElementById('login-error');
-  const okEl = document.getElementById('login-success');
-
-  btn.disabled = true;
-  btn.textContent = 'Vérification...';
   errEl.style.display = 'none';
-  okEl.style.display = 'none';
 
-  try {
-    const res = await fetch(API_BASE + '/api/check-subscription', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-
-    const data = await res.json();
-
-    if (data.active) {
-      S.email = email;
-      S.subscriptionInfo = data;
-      save();
-
-      if (S.name) {
-        showApp();
-      } else {
-        goTo('onboarding');
-      }
-    } else {
-      errEl.textContent = data.reason === 'NO_CUSTOMER'
-        ? '❌ Aucun abonnement trouvé pour cet email. Vérifie ou crée un abonnement.'
-        : '❌ Abonnement inactif ou expiré. Renouvelle sur Stripe.';
-      errEl.style.display = 'block';
-    }
-  } catch(e) {
-    errEl.textContent = '❌ Erreur de connexion. Réessaie dans quelques instants.';
+  if (!email || !email.includes('@')) {
+    errEl.textContent = '❌ Renseigne un email valide.';
     errEl.style.display = 'block';
+    return;
   }
 
-  btn.disabled = false;
-  btn.textContent = 'Accéder à mon espace';
+  // MODE TEST — vérification Stripe désactivée
+  S.email = email;
+  S.subscriptionInfo = { plan: 'Test', renewsAt: '—', status: 'active' };
+  save();
+  if (S.name) {
+    showApp();
+  } else {
+    goTo('onboarding');
+  }
 }
 
 function handleRegister() {
