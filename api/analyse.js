@@ -67,7 +67,8 @@ export default async function handler(req, res) {
   const calNet = (calories || 0) - (caloriesBurned || 0);
   const calRestant = Math.max(0, (calTarget || 1800) - (calories || 0));
 
-  const repasConsumed = `Calories consommées : ${calories || 0} kcal | Dépensées : ${caloriesBurned || 0} kcal | Net : ${calNet} kcal\nProtéines : ${prot || 0}g | Glucides : ${carb || 0}g | Lipides : ${fat || 0}g | Fibres : ${fiber || 0}g\nRepas : ${meals || 'non renseignés'}`;
+  const calEcart = (calories || 0) - (calTarget || 1800);
+  const repasConsumed = `Calories consommées : ${calories || 0} kcal (objectif : ${calTarget} kcal, écart : ${calEcart >= 0 ? '+' : ''}${calEcart} kcal)\nCalories dépensées sport : ${caloriesBurned || 0} kcal (info complémentaire uniquement)\nProtéines : ${prot || 0}g | Glucides : ${carb || 0}g | Lipides : ${fat || 0}g | Fibres : ${fiber || 0}g\nRepas : ${meals || 'non renseignés'}`;
 
   let prompt;
 
@@ -115,7 +116,6 @@ ${historyContext}
 
 Données de sa journée d'aujourd'hui :
 - ${repasConsumed}
-- Bilan net : ${calNet} kcal (objectif : ${calTarget} kcal, écart : ${(calNet - calTarget > 0 ? '+' : '') + (calNet - calTarget)} kcal)
 - Note Foodvisor : ${score >= 80 ? '🟢 Journée verte (excellente qualité)' : score >= 55 ? '🔵 Journée bleue (bonne qualité)' : score >= 30 ? '🟠 Journée orange (qualité moyenne)' : '🔴 Journée rouge (à améliorer)'}
 - Ratio calorique macros : ${prot && carb && fat ? `P ${Math.round(prot*4/(prot*4+carb*4+fat*9)*100)}% / G ${Math.round(carb*4/(prot*4+carb*4+fat*9)*100)}% / L ${Math.round(fat*9/(prot*4+carb*4+fat*9)*100)}%` : '?'}
 - Activité physique : ${activity || '?'}
