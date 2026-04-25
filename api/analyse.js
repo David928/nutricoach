@@ -38,9 +38,11 @@ export default async function handler(req, res) {
   // Pour passer en mode strict : ajouter Vercel KV (gratuit jusqu'à 3000 req/jour).
 
   // ── 3. CONSTRUCTION DU PROMPT ─────────────────────────────────────────
+  const { mode } = body; // 'analyse' (défaut) ou 'conseil_soir'
+
   const {
     name, goals, coachStyle, calTarget,
-    calories, caloriesBurned, score, prot, carb, fat,
+    calories, caloriesBurned, score, prot, carb, fat, fiber,
     activity, feeling, hunger, hydration,
     meals, notes, history
   } = data;
@@ -62,32 +64,64 @@ export default async function handler(req, res) {
   const userGoals = (goals || []).map(g => goalsText[g] || g).join(', ') || 'objectif général';
   const styleInstruction = stylePrompts[coachStyle] || stylePrompts.motivant;
 
-  // Historique des 3 derniers jours pour contextualiser
-  const historyContext = history && history.length > 0
-    ? `\nHistorique récent (${history.length} jours) :\n` +
-      history.slice(0, 3).map((h, i) => {
-        const d = new Date(h.date);
-        return `- J-${i+1} (${d.toLocaleDateString('fr')}) : ${h.calories} kcal, score ${h.score}/100, prot ${h.prot}g/carb ${h.carb}g/fat ${h.fat}g`;
-      }).join('\n')
-    : '';
+  const calNet = (calories || 0) - (caloriesBurned || 0);
+  const calRestant = Math.max(0, (calTarget || 1800) - calNet);
 
-  const prompt = `Tu es NutriCoach, un coach nutritionnel expert et bienveillant. ${styleInstruction}
+  const repasConsumed = `Calories consommées : ${calories || 0} kcal | Dépensées : ${caloriesBurned || 0} kcal | Net : ${calNet} kcal\nProtéines : ${prot || 0}g | Glucides : ${carb || 0}g | Lipides : ${fat || 0}g | Fibres : ${fiber || 0}g\nRepas : ${meals || 'non renseignés'}`;
+
+  let prompt;
+
+  if (mode === 'conseil_soir') {
+    prompt = `Tu es NutriCoach, un coach nutritionnel expert et bienveillant. Sois concret, pratique et encourageant.
+
+L'utilisateur s'appelle ${name}. Ses objectifs : ${userGoals}. Objectif calorique quotidien : ${calTarget} kcal.
+
+Ce qu'il a déjà mangé aujourd'hui :
+${repasConsumed}
+
+Il lui reste environ **${calRestant} kcal** à consommer ce soir pour atteindre son objectif journalier.
+
+Propose-lui 2 options concrètes et réalistes pour le dîner qui complètent bien ses macros de la journée. Pour chaque option, précise les aliments avec les quantités et les macros approximatives.
+
+Structure ta réponse EXACTEMENT ainsi :
+
+**🌙 Ce qu'il te reste à couvrir**
+[Résumé des calories et macros restantes à atteindre ce soir]
+
+**🍽️ Option 1 — [nom du repas]**
+[Liste des aliments avec quantités] — ~[X] kcal | P: Xg G: Xg L: Xg
+
+**🍽️ Option 2 — [nom du repas]**
+[Liste des aliments avec quantités] — ~[X] kcal | P: Xg G: Xg L: Xg
+
+**💡 Astuce du soir**
+[1 conseil pratique pour bien finir la journée]
+
+Sois précis sur les quantités. Maximum 220 mots.`;
+
+  } else {
+    const historyContext = history && history.length > 0
+      ? `\nHistorique récent (${history.length} jours) :\n` +
+        history.slice(0, 3).map((h, i) => {
+          const d = new Date(h.date);
+          return `- J-${i+1} (${d.toLocaleDateString('fr')}) : ${h.calories} kcal, score ${h.score}/100, prot ${h.prot}g/carb ${h.carb}g/fat ${h.fat}g`;
+        }).join('\n')
+      : '';
+
+    prompt = `Tu es NutriCoach, un coach nutritionnel expert et bienveillant. ${styleInstruction}
 
 L'utilisateur s'appelle ${name}. Ses objectifs : ${userGoals}. Objectif calorique quotidien : ${calTarget} kcal.
 ${historyContext}
 
 Données de sa journée d'aujourd'hui :
-- Calories consommées : ${calories || '?'} kcal
-- Calories dépensées (sport/activité) : ${caloriesBurned || '0'} kcal
-- Bilan net : ${calories && caloriesBurned ? (calories - caloriesBurned) + ' kcal' : calories || '?'} kcal (objectif : ${calTarget} kcal, écart : ${calories ? ((calories - (caloriesBurned||0)) - calTarget > 0 ? '+' : '') + ((calories - (caloriesBurned||0)) - calTarget) + ' kcal' : '?'})
+- ${repasConsumed}
+- Bilan net : ${calNet} kcal (objectif : ${calTarget} kcal, écart : ${(calNet - calTarget > 0 ? '+' : '') + (calNet - calTarget)} kcal)
 - Note Foodvisor : ${score >= 80 ? '🟢 Journée verte (excellente qualité)' : score >= 55 ? '🔵 Journée bleue (bonne qualité)' : score >= 30 ? '🟠 Journée orange (qualité moyenne)' : '🔴 Journée rouge (à améliorer)'}
-- Protéines : ${prot || '?'}g | Glucides : ${carb || '?'}g | Lipides : ${fat || '?'}g
 - Ratio calorique macros : ${prot && carb && fat ? `P ${Math.round(prot*4/(prot*4+carb*4+fat*9)*100)}% / G ${Math.round(carb*4/(prot*4+carb*4+fat*9)*100)}% / L ${Math.round(fat*9/(prot*4+carb*4+fat*9)*100)}%` : '?'}
 - Activité physique : ${activity || '?'}
 - Ressenti général : ${feeling || '?'}
 - Faim ressentie : ${hunger || '?'}
 - Hydratation : ${hydration || '?'}
-- Repas : ${meals || 'non renseignés'}
 ${notes ? `- Notes : ${notes}` : ''}
 
 Analyse la journée en français. Structure ta réponse EXACTEMENT ainsi (utilise ces émojis et sections) :
@@ -105,6 +139,7 @@ Analyse la journée en français. Structure ta réponse EXACTEMENT ainsi (utilis
 [1 conseil spécifique et pratique pour le lendemain]
 
 Sois chaleureux, précis et personnalisé. Maximum 280 mots.`;
+  }
 
   // ── 4. APPEL CLAUDE ────────────────────────────────────────────────────
   try {

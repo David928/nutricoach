@@ -620,6 +620,24 @@
   .analyse-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(10,46,26,0.28); }
   .analyse-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+  .soir-btn {
+    width: 100%;
+    padding: 13px;
+    background: none;
+    color: #5b6fa0;
+    border: 1.5px solid #c5cfe8;
+    border-radius: var(--radius-sm);
+    font-family: 'Clash Display', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  .soir-btn:hover:not(:disabled) { background: #f0f3fc; border-color: #5b6fa0; }
+  .soir-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
   /* AI PANEL */
   .ai-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
   .ai-avatar { width: 34px; height: 34px; background: linear-gradient(135deg, var(--green-deep), var(--green-mid)); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
@@ -1019,6 +1037,9 @@
 
           <button class="analyse-btn" id="analyse-btn" onclick="analyse()">
             <span id="analyse-lbl">🤖 Analyser ma journée avec l'IA</span>
+          </button>
+          <button class="soir-btn" id="soir-btn" onclick="conseilSoir()">
+            <span id="soir-lbl">🌙 Que manger ce soir pour rester dans mes macros ?</span>
           </button>
         </div>
       </div>
@@ -1474,6 +1495,70 @@ async function analyse() {
 
   btn.disabled = false;
   lbl.innerHTML = '🤖 Analyser ma journée avec l\'IA';
+}
+
+// ══════════════════════════════════════════════════
+//  CONSEIL SOIR
+// ══════════════════════════════════════════════════
+async function conseilSoir() {
+  const btn = document.getElementById('soir-btn');
+  const lbl = document.getElementById('soir-lbl');
+  const msgEl = document.getElementById('ai-msg');
+
+  btn.disabled = true;
+  lbl.innerHTML = '<div class="spinner" style="border-color:rgba(91,111,160,0.3);border-top-color:#5b6fa0"></div> Calcul en cours...';
+  msgEl.textContent = '🌙 Je calcule ce qu\'il te reste à manger ce soir...';
+
+  const meals = [...document.querySelectorAll('.meal-item')].map(m => {
+    const n = m.querySelector('.meal-name').value;
+    const k = m.querySelector('.meal-kcal').value;
+    return n ? `${n}${k ? ' (' + k + ' kcal)' : ''}` : null;
+  }).filter(Boolean).join(', ');
+
+  const payload = {
+    licenseEmail: S.email || 'test@test.com',
+    mode: 'conseil_soir',
+    data: {
+      name: S.name,
+      goals: S.goals,
+      coachStyle: S.style,
+      calTarget: S.calTarget,
+      calories: document.getElementById('calories').value,
+      caloriesBurned: document.getElementById('calories-burned').value,
+      prot: document.getElementById('prot').value,
+      carb: document.getElementById('carb').value,
+      fat: document.getElementById('fat').value,
+      fiber: document.getElementById('fiber').value,
+      meals,
+      notes: document.getElementById('notes').value,
+    }
+  };
+
+  try {
+    const res = await fetch('/api/analyse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      msgEl.textContent = '❌ ' + (data.error || 'Erreur inconnue');
+    } else {
+      const formatted = data.analysis
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+      msgEl.innerHTML = formatted;
+      const now = new Date();
+      document.getElementById('ai-ts').textContent = `Conseil soir — ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+    }
+  } catch(e) {
+    msgEl.textContent = '❌ Erreur réseau. Vérifie ta connexion.';
+  }
+
+  btn.disabled = false;
+  lbl.innerHTML = '🌙 Que manger ce soir pour rester dans mes macros ?';
 }
 
 // ══════════════════════════════════════════════════
