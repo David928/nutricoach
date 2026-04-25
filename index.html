@@ -570,6 +570,10 @@
   .mring { width: 72px; height: 72px; transform: rotate(-90deg); }
   .mring-bg { fill: none; stroke: #dde8e0; stroke-width: 6; }
   .mring-fill { fill: none; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 188.5; stroke-dashoffset: 188.5; transition: stroke-dashoffset 0.5s ease; }
+  #mring-fat   { stroke: var(--c-fat,   #F5C518); }
+  #mring-prot  { stroke: var(--c-prot,  #E8356D); }
+  #mring-carb  { stroke: var(--c-carb,  #4A90D9); }
+  #mring-fiber { stroke: var(--c-fiber, #7B5C3B); }
   .mring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .mring-val { font-family: 'Clash Display', sans-serif; font-size: 15px; font-weight: 700; line-height: 1.15; }
   .mring-tgt { font-size: 9px; color: var(--text-light); }
@@ -1327,7 +1331,8 @@ function showApp() {
   document.getElementById('cal-target-lbl').textContent = S.calTarget + ' kcal';
   document.getElementById('cal-remain-lbl').textContent = S.calTarget + ' kcal';
   updateMacroTargets();
-  initMacroRingBg();
+  // Init couleurs des anneaux
+  Object.values(RING_VARS).forEach(r => document.documentElement.style.setProperty(r.varName, r.normal));
 
   // Date
   const now = new Date();
@@ -1430,11 +1435,11 @@ function updateMacroTargets() {
   document.getElementById('fiber-tgt').textContent = '/' + S.fiberTarget + 'g';
 }
 
-const RING_COLORS = {
-  'mring-fat':   { normal: '#F5C518', exceeded: '#B8880A' },
-  'mring-prot':  { normal: '#E8356D', exceeded: '#9E1045' },
-  'mring-carb':  { normal: '#4A90D9', exceeded: '#1F5FA0' },
-  'mring-fiber': { normal: '#7B5C3B', exceeded: '#3E2A14' },
+const RING_VARS = {
+  'mring-fat':   { varName: '--c-fat',   normal: '#F5C518', exceeded: '#B8880A' },
+  'mring-prot':  { varName: '--c-prot',  normal: '#E8356D', exceeded: '#9E1045' },
+  'mring-carb':  { varName: '--c-carb',  normal: '#4A90D9', exceeded: '#1F5FA0' },
+  'mring-fiber': { varName: '--c-fiber', normal: '#7B5C3B', exceeded: '#3E2A14' },
 };
 
 function setMacroRing(id, val, target) {
@@ -1443,16 +1448,8 @@ function setMacroRing(id, val, target) {
   const exceeded = target > 0 && val > target;
   const pct = target > 0 ? (exceeded ? 1 : val / target) : 0;
   el.style.strokeDashoffset = 188.5 - pct * 188.5;
-  const c = RING_COLORS[id];
-  if (c) el.setAttribute('stroke', exceeded ? c.exceeded : c.normal);
-}
-
-function initMacroRingBg() {
-  ['mring-fat','mring-prot','mring-carb','mring-fiber'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.setAttribute('stroke', RING_COLORS[id].normal);
-  });
-  document.querySelectorAll('.mring-bg').forEach(el => el.setAttribute('stroke', '#dde8e0'));
+  const r = RING_VARS[id];
+  if (r) document.documentElement.style.setProperty(r.varName, exceeded ? r.exceeded : r.normal);
 }
 
 function updateMacros() {
