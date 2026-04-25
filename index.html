@@ -570,7 +570,6 @@
   .mring { width: 72px; height: 72px; transform: rotate(-90deg); }
   .mring-bg { fill: none; stroke: #dde8e0; stroke-width: 6; }
   .mring-fill { fill: none; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 188.5; stroke-dashoffset: 188.5; transition: stroke-dashoffset 0.5s ease; }
-  .mring-fill { stroke: #dde8e0; }
   .mring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .mring-val { font-family: 'Clash Display', sans-serif; font-size: 15px; font-weight: 700; line-height: 1.15; }
   .mring-tgt { font-size: 9px; color: var(--text-light); }
@@ -1328,10 +1327,7 @@ function showApp() {
   document.getElementById('cal-target-lbl').textContent = S.calTarget + ' kcal';
   document.getElementById('cal-remain-lbl').textContent = S.calTarget + ' kcal';
   updateMacroTargets();
-  setMacroRing('mring-fat',   0, S.fatTarget);
-  setMacroRing('mring-prot',  0, S.protTarget);
-  setMacroRing('mring-carb',  0, S.carbTarget);
-  setMacroRing('mring-fiber', 0, S.fiberTarget);
+  initMacroRingBg();
 
   // Date
   const now = new Date();
@@ -1448,7 +1444,15 @@ function setMacroRing(id, val, target) {
   const pct = target > 0 ? (exceeded ? 1 : val / target) : 0;
   el.style.strokeDashoffset = 188.5 - pct * 188.5;
   const c = RING_COLORS[id];
-  if (c) el.style.setProperty('stroke', exceeded ? c.exceeded : c.normal, 'important');
+  if (c) el.setAttribute('stroke', exceeded ? c.exceeded : c.normal);
+}
+
+function initMacroRingBg() {
+  ['mring-fat','mring-prot','mring-carb','mring-fiber'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('stroke', RING_COLORS[id].normal);
+  });
+  document.querySelectorAll('.mring-bg').forEach(el => el.setAttribute('stroke', '#dde8e0'));
 }
 
 function updateMacros() {
