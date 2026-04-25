@@ -1433,11 +1433,21 @@ function updateMacroTargets() {
   document.getElementById('fiber-tgt').textContent = '/' + S.fiberTarget + 'g';
 }
 
+const MACRO_COLORS = {
+  'mring-fat':   { normal: '#F5C518', exceeded: '#B8880A' },
+  'mring-prot':  { normal: '#E8356D', exceeded: '#9E1045' },
+  'mring-carb':  { normal: '#4A90D9', exceeded: '#1F5FA0' },
+  'mring-fiber': { normal: '#7B5C3B', exceeded: '#3E2A14' },
+};
+
 function setMacroRing(id, val, target) {
   const el = document.getElementById(id);
-  if (!el) return;
-  const pct = target > 0 ? Math.min(val / target, 1) : 0;
+  if (!el || !target) return;
+  const exceeded = val > target;
+  const pct = exceeded ? 1 : val / target;
   el.style.strokeDashoffset = 188.5 - pct * 188.5;
+  const colors = MACRO_COLORS[id];
+  if (colors) el.style.stroke = exceeded ? colors.exceeded : colors.normal;
 }
 
 function updateMacros() {
