@@ -555,9 +555,10 @@
   .macro-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .mlabel { width: 76px; font-size: 12px; font-weight: 500; color: var(--text-mid); display: flex; align-items: center; gap: 5px; }
   .mdot { width: 7px; height: 7px; border-radius: 50%; }
-  .mdot.p { background: var(--green-fresh); }
-  .mdot.c { background: var(--gold); }
-  .mdot.f { background: var(--orange-warm); }
+  .mdot.p { background: #E8356D; }
+  .mdot.c { background: #4A90D9; }
+  .mdot.f { background: #F5C518; }
+  .mdot.fb { background: #7B5C3B; }
   .minput { flex: 1; padding: 8px 11px; border: 1.5px solid #e0ebe5; border-radius: 7px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; color: var(--text-dark); background: var(--cream); outline: none; transition: border-color 0.2s; }
   .minput:focus { border-color: var(--green-fresh); background: white; }
   .munit { font-size: 11px; color: var(--text-light); width: 18px; }
@@ -568,9 +569,10 @@
   .mpval { font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; line-height: 1; }
   .mpunit { font-size: 10px; color: var(--text-light); margin-top: 1px; }
   .mplabel { font-size: 11px; font-weight: 600; margin-top: 5px; }
-  .mpcard.p .mplabel { color: var(--green-fresh); }
-  .mpcard.c .mplabel { color: var(--gold); }
-  .mpcard.f .mplabel { color: var(--orange-warm); }
+  .mpcard.p .mplabel { color: #E8356D; }
+  .mpcard.c .mplabel { color: #4A90D9; }
+  .mpcard.f .mplabel { color: #F5C518; }
+  .mpcard.fb .mplabel { color: #7B5C3B; }
 
   /* CAL RING */
   .cal-wrap { display: flex; align-items: center; gap: 18px; padding: 6px 0 16px; }
@@ -700,7 +702,7 @@
 
   .fv-face { padding: 6px 10px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; background: var(--cream); }
   .fv-face:hover { transform: scale(1.15); }
-  .fv-face.selected { border-color: var(--green-fresh); background: var(--green-pale); transform: scale(1.15); }
+  .fv-face.selected { background: var(--green-pale); transform: scale(1.15); }
 
   .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -914,15 +916,15 @@
         <div class="panel" style="margin-bottom:18px">
           <div class="panel-title"><div class="pticon" style="background:var(--orange-light)">📊</div>Macronutriments</div>
           <div class="mprev" style="grid-template-columns:repeat(4,1fr)">
+            <div class="mpcard f"><div class="mpval" id="fv">0</div><div class="mpunit">g</div><div class="mplabel">Lipides</div></div>
             <div class="mpcard p"><div class="mpval" id="pv">0</div><div class="mpunit">g</div><div class="mplabel">Protéines</div></div>
             <div class="mpcard c"><div class="mpval" id="cv">0</div><div class="mpunit">g</div><div class="mplabel">Glucides</div></div>
-            <div class="mpcard f"><div class="mpval" id="fv">0</div><div class="mpunit">g</div><div class="mplabel">Lipides</div></div>
-            <div class="mpcard" style="background:var(--cream)"><div class="mpval" id="fibv" style="color:#5ba85a">0</div><div class="mpunit">g</div><div class="mplabel" style="color:#5ba85a">Fibres</div></div>
+            <div class="mpcard fb"><div class="mpval" id="fibv">0</div><div class="mpunit">g</div><div class="mplabel">Fibres</div></div>
           </div>
+          <div class="macro-row"><div class="mlabel"><div class="mdot f"></div>Lipides</div><input class="minput" type="number" id="fat" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
           <div class="macro-row"><div class="mlabel"><div class="mdot p"></div>Protéines</div><input class="minput" type="number" id="prot" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
           <div class="macro-row"><div class="mlabel"><div class="mdot c"></div>Glucides</div><input class="minput" type="number" id="carb" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
-          <div class="macro-row"><div class="mlabel"><div class="mdot f"></div>Lipides</div><input class="minput" type="number" id="fat" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
-          <div class="macro-row"><div class="mlabel"><div class="mdot" style="background:#5ba85a"></div>Fibres</div><input class="minput" type="number" id="fiber" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
+          <div class="macro-row"><div class="mlabel"><div class="mdot fb"></div>Fibres</div><input class="minput" type="number" id="fiber" placeholder="0" oninput="updateMacros()"/><div class="munit">g</div></div>
         </div>
 
         <!-- DONNÉES DU JOUR -->
@@ -940,17 +942,17 @@
             <div>
               <label class="flabel">Note Foodvisor</label>
               <div style="display:flex;gap:10px;margin-top:4px" id="foodvisor-faces">
-                <div class="fv-face selected" data-color="green" data-score="90" onclick="selectFace(this)" title="Verte — Excellent">
-                  <span style="font-size:26px;filter:hue-rotate(90deg) saturate(2)">😊</span>
+                <div class="fv-face selected" data-color="#4eca83" data-score="90" onclick="selectFace(this)" title="Excellent">
+                  <span style="font-size:26px">😄</span>
                 </div>
-                <div class="fv-face" data-color="blue" data-score="65" onclick="selectFace(this)" title="Bleue — Bien">
-                  <span style="font-size:26px;filter:hue-rotate(200deg) saturate(2)">😊</span>
+                <div class="fv-face" data-color="#7B8FE8" data-score="65" onclick="selectFace(this)" title="Bien">
+                  <span style="font-size:26px">😊</span>
                 </div>
-                <div class="fv-face" data-color="orange" data-score="40" onclick="selectFace(this)" title="Orange — Moyen">
-                  <span style="font-size:26px;filter:hue-rotate(30deg) saturate(2)">😐</span>
+                <div class="fv-face" data-color="#C8D84A" data-score="40" onclick="selectFace(this)" title="Moyen">
+                  <span style="font-size:26px">😐</span>
                 </div>
-                <div class="fv-face" data-color="red" data-score="15" onclick="selectFace(this)" title="Rouge — À améliorer">
-                  <span style="font-size:26px;filter:hue-rotate(330deg) saturate(2)">😕</span>
+                <div class="fv-face" data-color="#E8834A" data-score="15" onclick="selectFace(this)" title="À améliorer">
+                  <span style="font-size:26px">🙁</span>
                 </div>
               </div>
               <input type="hidden" id="score" value="90"/>
@@ -1309,8 +1311,12 @@ function updateRing() {
 }
 
 function selectFace(el) {
-  document.querySelectorAll('.fv-face').forEach(f => f.classList.remove('selected'));
+  document.querySelectorAll('.fv-face').forEach(f => {
+    f.classList.remove('selected');
+    f.style.borderColor = 'transparent';
+  });
   el.classList.add('selected');
+  el.style.borderColor = el.dataset.color;
   document.getElementById('score').value = el.dataset.score;
   updateScoreBar();
 }
@@ -1498,7 +1504,11 @@ function saveDay() {
     document.getElementById(id).value = '';
   });
   // Reset face selector
-  document.querySelectorAll('.fv-face').forEach((f, i) => f.classList.toggle('selected', i === 0));
+  document.querySelectorAll('.fv-face').forEach((f, i) => {
+    f.classList.toggle('selected', i === 0);
+    f.style.borderColor = i === 0 ? f.dataset.color : 'transparent';
+  });
+  document.getElementById('score').value = 90;
   document.getElementById('score').value = 90;
   document.getElementById('meals-list').innerHTML = `
     <div class="meal-item"><span style="font-size:16px">☀️</span><input class="meal-name" placeholder="Petit-déjeuner..."/><input class="meal-kcal" type="number" placeholder="kcal"/><button class="meal-del" onclick="delMeal(this)">×</button></div>
