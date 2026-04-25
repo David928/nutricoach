@@ -65,7 +65,7 @@ export default async function handler(req, res) {
   const styleInstruction = stylePrompts[coachStyle] || stylePrompts.motivant;
 
   const calNet = (calories || 0) - (caloriesBurned || 0);
-  const calRestant = Math.max(0, (calTarget || 1800) - calNet);
+  const calRestant = Math.max(0, (calTarget || 1800) - (calories || 0));
 
   const repasConsumed = `Calories consommées : ${calories || 0} kcal | Dépensées : ${caloriesBurned || 0} kcal | Net : ${calNet} kcal\nProtéines : ${prot || 0}g | Glucides : ${carb || 0}g | Lipides : ${fat || 0}g | Fibres : ${fiber || 0}g\nRepas : ${meals || 'non renseignés'}`;
 
