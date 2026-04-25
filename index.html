@@ -570,14 +570,7 @@
   .mring { width: 72px; height: 72px; transform: rotate(-90deg); }
   .mring-bg { fill: none; stroke: #dde8e0; stroke-width: 6; }
   .mring-fill { fill: none; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 188.5; stroke-dashoffset: 188.5; transition: stroke-dashoffset 0.5s ease; }
-  .mring-fill.f  { stroke: #F5C518; }
-  .mring-fill.p  { stroke: #E8356D; }
-  .mring-fill.c  { stroke: #4A90D9; }
-  .mring-fill.fb { stroke: #7B5C3B; }
-  .mring-fill.f.exceeded  { stroke: #B8880A; }
-  .mring-fill.p.exceeded  { stroke: #9E1045; }
-  .mring-fill.c.exceeded  { stroke: #1F5FA0; }
-  .mring-fill.fb.exceeded { stroke: #3E2A14; }
+  .mring-fill { stroke: #dde8e0; }
   .mring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .mring-val { font-family: 'Clash Display', sans-serif; font-size: 15px; font-weight: 700; line-height: 1.15; }
   .mring-tgt { font-size: 9px; color: var(--text-light); }
@@ -1335,6 +1328,10 @@ function showApp() {
   document.getElementById('cal-target-lbl').textContent = S.calTarget + ' kcal';
   document.getElementById('cal-remain-lbl').textContent = S.calTarget + ' kcal';
   updateMacroTargets();
+  setMacroRing('mring-fat',   0, S.fatTarget);
+  setMacroRing('mring-prot',  0, S.protTarget);
+  setMacroRing('mring-carb',  0, S.carbTarget);
+  setMacroRing('mring-fiber', 0, S.fiberTarget);
 
   // Date
   const now = new Date();
@@ -1437,13 +1434,21 @@ function updateMacroTargets() {
   document.getElementById('fiber-tgt').textContent = '/' + S.fiberTarget + 'g';
 }
 
+const RING_COLORS = {
+  'mring-fat':   { normal: '#F5C518', exceeded: '#B8880A' },
+  'mring-prot':  { normal: '#E8356D', exceeded: '#9E1045' },
+  'mring-carb':  { normal: '#4A90D9', exceeded: '#1F5FA0' },
+  'mring-fiber': { normal: '#7B5C3B', exceeded: '#3E2A14' },
+};
+
 function setMacroRing(id, val, target) {
   const el = document.getElementById(id);
-  if (!el || !target) return;
-  const exceeded = val > target;
-  const pct = exceeded ? 1 : val / target;
+  if (!el) return;
+  const exceeded = target > 0 && val > target;
+  const pct = target > 0 ? (exceeded ? 1 : val / target) : 0;
   el.style.strokeDashoffset = 188.5 - pct * 188.5;
-  el.classList.toggle('exceeded', exceeded);
+  const c = RING_COLORS[id];
+  if (c) el.style.setProperty('stroke', exceeded ? c.exceeded : c.normal, 'important');
 }
 
 function updateMacros() {
